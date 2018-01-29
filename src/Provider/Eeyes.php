@@ -33,7 +33,7 @@ class Eeyes extends AbstractProvider
     */
     public function getBaseAuthorizationUrl()
     {
-        return $this->domain.'/oauth/authorize';
+        return $this->domain.'oauth/authorize';
     }
 
     /**
@@ -44,7 +44,7 @@ class Eeyes extends AbstractProvider
      */
     public function getBaseAccessTokenUrl(array $param)
     {
-        return $this->domain.'/oauth/token';
+        return $this->domain.'oauth/token';
     }
 
     /**
