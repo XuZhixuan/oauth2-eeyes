@@ -17,7 +17,7 @@
     ],
 	"autoload": {
         "psr-4": {
-            "sxxuz\\OAuth2\\Client": "/src"            
+            "sxxuz\\OAuth2\\Client\\": "/src"            
         }
   },
     "minimum-stability": "dev"
