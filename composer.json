@@ -1,0 +1,24 @@
+{
+    "name": "sxxuz/oauth2-eeyes",
+    "description": "A Client For Eeyes-Net OAuth2 Server on PHP",
+    "type": "library",
+    "require": {
+        "league/oauth2-client": "^2.3"
+    },
+    "require-dev": {
+        "league/oauth2-client": "^2.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "XuZhixuan",
+            "email": "sxxuzhixuan@hotmail.com"
+        }
+    ],
+	"autoload": {
+        "psr-4": {
+            "sxxuz\\OAuth2\\Client": "/src"            
+        }
+  },
+    "minimum-stability": "dev"
+}
