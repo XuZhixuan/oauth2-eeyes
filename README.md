@@ -4,7 +4,7 @@
 
 ---
 
- - 这是一个基于 thephpleague/oauth2.0-client 的 OAuth2.0 客户端 Provider 
+ - 这是一个基于 thephpleague/oauth2.0-client 的 OAuth2.0 客户端 Provider
 
  - 其中主要的配置内容已经为e瞳网用户账户中心的 OAuth2.0 服务器进行了配置，在使用时，请新建好配置文件以备引用。
 
@@ -18,8 +18,7 @@
 
 ## 使用
     使用方法与 League/OAuth2.0-Client 基本相同
-    
-	用法示例
+
 
 ## 认证流程
 
@@ -80,7 +79,7 @@ $provider = new Eeyes([
 
 
             //可选内容：现在可以通过 Access Token 获取用户信息
-            
+
                 $user = $provider->getResourceOwner($token);
 
 
@@ -92,6 +91,29 @@ $provider = new Eeyes([
 
         }
 
+```
+
+## 获取用户信息
+    当获取到 Token 后，使用 Token 来取得用户信息
+
+```php
+
+        $provider = new Eeyes([
+
+            'clientId'      => 'Your App ID Here,
+
+            'clientSecret'  => 'Your App Secret Here',
+
+            'redirectUri'   => 'Your Callback Url Here',
+
+        ]);
+
+        //这里的 Token 应当是 getAccessToken 的一个实例
+        $user = $provider->getResourceOwner($token);
+
+        //通过 EeyesResourceOwner 的方法获取实例信息
+        $username = $user->getUsername();
+        ...
 ```
 
 ## License
