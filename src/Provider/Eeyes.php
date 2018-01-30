@@ -24,7 +24,7 @@ class Eeyes extends AbstractProvider
     *
     * @var string
     */
-    public $apiDomain = 'https://account.eeyes.net/api';
+    public $apiDomain = 'https://account.eeyes.net/api/';
 
     /**
     * 获取授权地址以开始授权流程
@@ -55,7 +55,7 @@ class Eeyes extends AbstractProvider
     */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return $this->apiDomain.'/user';
+        return $this->apiDomain.'user';
     }
 
     /**
