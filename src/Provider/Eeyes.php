@@ -6,7 +6,6 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ResponseInterface;
-use \EeyesResourceOwner;
 
 class Eeyes extends AbstractProvider
 {
@@ -24,7 +23,7 @@ class Eeyes extends AbstractProvider
     *
     * @var string
     */
-    public $apiDomain = 'https://account.eeyes.net/api';
+    public $apiDomain = 'https://account.eeyes.net/api/';
 
     /**
     * 获取授权地址以开始授权流程
@@ -55,7 +54,7 @@ class Eeyes extends AbstractProvider
     */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return $this->apiDomain.'/user';
+        return $this->apiDomain.'user';
     }
 
     /**
@@ -99,8 +98,6 @@ class Eeyes extends AbstractProvider
     */
     protected function createResourceOwner(array $response, AccessToken $token)
     {
-        $user = new EeyesResourcesOwner($response);
-
-        return $user->setDomain($this->domain);
+        return new EeyesResourceOwner($response);
     }
 }
