@@ -12,6 +12,13 @@ class Eeyes extends AbstractProvider
     use BearerAuthorizationTrait;
 
     /**
+    * 使用session时的前缀
+    *
+    * @var string
+    */
+    const SESSION_HEAD = 'eeyes_';
+
+    /**
     * 域名
     *
     * @var string
@@ -24,6 +31,13 @@ class Eeyes extends AbstractProvider
     * @var string
     */
     public $apiDomain = 'https://account.eeyes.net/api/';
+
+    /**
+    * 权限列表
+    *
+    * @var array
+    */
+    public $scope = [];
 
     /**
     * 获取授权地址以开始授权流程
@@ -58,14 +72,23 @@ class Eeyes extends AbstractProvider
     }
 
     /**
-    * 获取基础授权范围
-    * 这里应该填写最基础的授权范围而不是全部授权
+    * 将存入Eeyes中的scope转换为scope字符串
     *
-    * @return array
+    * @return string scopes
     */
     protected function getDefaultScopes()
     {
-        return [];
+        return implode($this->getScopeSeparator(), $this->scope);
+    }
+
+    /**
+     * 返回scope的分隔符，默认为空格
+     *
+     * @return string Scope separator, defaults to ' '
+     */
+    protected function getScopeSeparator()
+    {
+        return ' ';
     }
 
     /**
@@ -99,5 +122,97 @@ class Eeyes extends AbstractProvider
     protected function createResourceOwner(array $response, AccessToken $token)
     {
         return new EeyesResourceOwner($response);
+    }
+
+    /**
+     * 获取用户信息
+     * 
+     * @return array 用户的主要信息，包括NetID和姓名
+     * 
+     * @throws Exception
+     */
+    public function getUser()
+    {
+        // 系统函数，启动session
+        if (PHP_SESSION_ACTIVE != session_status()) {
+            session_start();
+        }
+
+        // 获取$response，可能重定向或exit
+        if (isset($_SESSION[self::SESSION_HEAD . 'authorization'])) {
+            // 若Session中已经有了authorization，则直接从Session中取出$response
+            $response = $_SESSION[self::SESSION_HEAD . 'authorization'];
+        } else {
+            if (empty($_GET['code'])) {
+                // 未登录状态跳转到授权URL
+                $this->redirectToAuthorizationUrl();
+            } else {
+                // 检查state是否正确，不正确则直接exit
+                self::checkState();
+                // 向OAuth服务器请求获取用户信息
+                $response = $this->getAccessToken('authorization_code',[
+                    'code' => $_GET['code'],
+                ]);
+            }
+        }
+
+        // 获取用户信息
+        $user = $this->getResourceOwner($response);
+        // 返回必要信息
+        return [
+            'username' => $user->getUsername(),
+            'name'     => $user->getName(),
+        ];
+    }
+
+    /**
+     * 重定向到授权URL
+     */
+    private function redirectToAuthorizationUrl()
+    {
+        // 获取跳转的URL
+        $url = $this->getAuthorizationUrl();
+        // 将state记录到Session
+        $_SESSION[self::SESSION_HEAD . 'state'] = $this->getState();
+        // 重定向并退出php
+        header('Location: '.$url);
+        exit(0);
+    }
+
+    /**
+     * 检查State是否正确
+     * 正确时无返回值
+     * 不正确时退出并显示Invalid State
+     */
+    private static function checkState()
+    {
+        // 以下几个if可以写成一行，但是就太难识别了
+
+        // 检查URL中是否有state
+        if (empty($_GET['state'])) {
+            self::exitInvalidState();
+        }
+
+        // 检查Session中是否存有state
+        if (!isset($_SESSION[self::SESSION_HEAD . 'state'])) {
+            self::exitInvalidState();
+        }
+
+        // 检查state是否一致
+        if ($_GET['state'] !== $_SESSION[self::SESSION_HEAD . 'state']) {
+            self::exitInvalidState();
+        }
+    }
+
+    /**
+     * 退出并显示Invalid State
+     */
+    private static function exitInvalidState()
+    {
+        // 清除Session并退出
+        if(isset($_SESSION[self::SESSION_HEAD . 'state'])) {
+            unset($_SESSION[self::SESSION_HEAD . 'state']);
+        }
+        exit('Invalid State');
     }
 }
