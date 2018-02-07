@@ -35,6 +35,8 @@ _请务必保证重定向地址正确，即保证重定向返回后会执行getU
             'clientSecret'  => 'Your App Secret Here',
 
             'redirectUri'   => 'Your Callback Url Here',
+            
+            'state'         => 'Your State Here',
 
             'scope'	        => [
                 'scope1',

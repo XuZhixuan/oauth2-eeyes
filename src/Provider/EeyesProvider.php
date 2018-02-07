@@ -7,7 +7,7 @@ use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ResponseInterface;
 
-class Eeyes extends AbstractProvider
+class EeyesProvider extends AbstractProvider
 {
     use BearerAuthorizationTrait;
 
@@ -76,19 +76,9 @@ class Eeyes extends AbstractProvider
     *
     * @return string scopes
     */
-    protected function getDefaultScopes()
+    protected function getDefaultScopes($separator = ' ')
     {
-        return implode($this->getScopeSeparator(), $this->scope);
-    }
-
-    /**
-     * 返回scope的分隔符，默认为空格
-     *
-     * @return string Scope separator, defaults to ' '
-     */
-    protected function getScopeSeparator()
-    {
-        return ' ';
+        return implode($separator, $this->scope);
     }
 
     /**
@@ -153,16 +143,12 @@ class Eeyes extends AbstractProvider
                 $response = $this->getAccessToken('authorization_code',[
                     'code' => $_GET['code'],
                 ]);
+                $_SESSION[self::SESSION_HEAD . 'authorization'] = $response;
             }
         }
-
         // 获取用户信息
         $user = $this->getResourceOwner($response);
-        // 返回必要信息
-        return [
-            'username' => $user->getUsername(),
-            'name'     => $user->getName(),
-        ];
+        return $user;
     }
 
     /**
